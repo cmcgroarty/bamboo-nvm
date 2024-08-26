@@ -26,7 +26,8 @@ ENV USERNAME=bamboo
 ENV UID=1002
 ENV HOME=/home/$USERNAME
 RUN adduser $USERNAME --uid $UID --home $HOME --shell /bin/bash
-
+# remove "if not running interactively, don't do anything"
+RUN sed -e '/[ -z "$PS1" ] && return/s/^/#/g' -i $HOME/.bashrc
 
 # add ngsw-rehash
 ADD https://github.com/dev-jan/ngsw-rehash/releases/download/v1.0/ngsw-rehash-linux-x86 $HOME/bin/ngsw-rehash
