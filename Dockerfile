@@ -26,8 +26,6 @@ ENV USERNAME=bamboo
 ENV UID=1002
 ENV HOME=/home/$USERNAME
 RUN adduser $USERNAME --uid $UID --home $HOME --shell /bin/bash
-# remove "if not running interactively, don't do anything"
-RUN sed -e '/[ -z "$PS1" ] && return/s/^/#/g' -i $HOME/.bashrc
 
 # add ngsw-rehash
 ADD https://github.com/dev-jan/ngsw-rehash/releases/download/v1.0/ngsw-rehash-linux-x86 $HOME/bin/ngsw-rehash
@@ -35,8 +33,8 @@ RUN chown -R $USERNAME:$USERNAME $HOME/bin
 RUN chmod +x $HOME/bin/ngsw-rehash
 
 USER $USERNAME:$USERNAME
+SHELL ["/bin/bash", "--login", "-c"]
 
-SHELL ["/bin/bash", "--login" , "-c"]
 ENV NVM_DIR="$HOME/.nvm"
 # add nvm
 RUN git clone https://github.com/nvm-sh/nvm.git "$NVM_DIR" \
@@ -45,18 +43,16 @@ RUN git clone https://github.com/nvm-sh/nvm.git "$NVM_DIR" \
       && \. "$NVM_DIR/nvm.sh"
 
 # nvm
-RUN echo 'export NVM_DIR="$HOME/.nvm"'                                       >> "$HOME/.bashrc"
-RUN echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm' >> "$HOME/.bashrc"
+RUN echo 'export NVM_DIR="$HOME/.nvm"'                                       >> "$HOME/.profile"
+RUN echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm' >> "$HOME/.profile"
 
 # install pnpm from pnpm
-RUN curl -fsSL https://get.pnpm.io/install.sh | ENV="$HOME/.bashrc" SHELL="$(which bash)" bash -
-
-RUN source $HOME/.bashrc
-
-
+RUN curl -fsSL https://get.pnpm.io/install.sh | ENV="$HOME/.profile" SHELL="$(which bash)" bash -
 
 # a few environment variables to make NPM installs easier
 # good colors for most applications
 ENV TERM=xterm
 # avoid million NPM install messages
 ENV npm_config_loglevel=warn
+
+RUN bash -l -c "source $HOME/.profile"
