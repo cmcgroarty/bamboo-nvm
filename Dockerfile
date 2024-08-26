@@ -1,8 +1,6 @@
 FROM debian:bookworm-slim
 LABEL org.opencontainers.image.authors="cmcgroarty@idesignconsulting.com"
 
-SHELL ["/bin/bash", "--login" , "-c"]
-
 # bamboo plan deps
 RUN apt update && apt install --no-install-recommends -y \
     curl \
@@ -37,19 +35,22 @@ RUN chmod +x $HOME/bin/ngsw-rehash
 
 USER $USERNAME:$USERNAME
 
+SHELL ["/bin/bash", "--login" , "-c"]
+ENV NVM_DIR="$HOME/.nvm"
 # add nvm
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
+RUN git clone https://github.com/nvm-sh/nvm.git "$NVM_DIR" \
+      && cd "$NVM_DIR" \
+      && git checkout `git describe --abbrev=0 --tags --match "v[0-9]*" $(git rev-list --tags --max-count=1)` \
+      && \. "$NVM_DIR/nvm.sh"
 
 # nvm
 RUN echo 'export NVM_DIR="$HOME/.nvm"'                                       >> "$HOME/.bashrc"
-RUN echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh --no-use"  # This loads nvm' >> "$HOME/.bashrc"
+RUN echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm' >> "$HOME/.bashrc"
 
 # install pnpm from pnpm
 RUN curl -fsSL https://get.pnpm.io/install.sh | ENV="$HOME/.bashrc" SHELL="$(which bash)" bash -
 
-
 RUN source $HOME/.bashrc
-RUN source $HOME/.profile
 
 
 
