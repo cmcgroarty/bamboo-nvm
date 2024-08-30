@@ -43,10 +43,6 @@ RUN git clone https://github.com/nvm-sh/nvm.git "$NVM_DIR" \
       && \. "$NVM_DIR/nvm.sh"
 
 # nvm
-# wait for https://github.com/nvm-sh/nvm/commit/4beab63631764fc381a0e56273faf8d43b8f9509
-# to be released to solve error on bamboo
-#/home/bamboo/.nvm/nvm.sh: line 552: unpaired_line: unbound variable
-#/home/bamboo/.nvm/nvm.sh: line 3771: VERSION: unbound variable
 RUN echo 'export NVM_DIR="$HOME/.nvm"' >> "$HOME/.profile"
 RUN echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm' >> "$HOME/.profile"
 
