@@ -25,11 +25,6 @@ RUN adduser $USERNAME --uid $UID --home $HOME --shell /bin/bash
 COPY .bashrc $HOME/.bashrc
 RUN chown -R $USERNAME:$USERNAME $HOME/.bashrc
 
-# add ngsw-rehash
-ADD https://github.com/dev-jan/ngsw-rehash/releases/download/v1.0/ngsw-rehash-linux-x86 $HOME/bin/ngsw-rehash
-RUN chown -R $USERNAME:$USERNAME $HOME/bin
-RUN chmod +x $HOME/bin/ngsw-rehash
-
 USER $USERNAME:$USERNAME
 SHELL ["/bin/bash", "--login", "-c"]
 
