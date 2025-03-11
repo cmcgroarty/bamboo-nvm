@@ -2,12 +2,7 @@ FROM debian:bookworm-slim
 LABEL org.opencontainers.image.authors="cmcgroarty@idesignconsulting.com"
 
 # bamboo plan deps
-RUN apt update && apt install --no-install-recommends -y \
-    curl \
-    wget \
-    ca-certificates \
-    git \
-    gnupg
+RUN apt update && apt install --no-install-recommends -y curl ca-certificates git
 
 # clean up
 RUN rm -rf /var/lib/apt/lists/* \
@@ -31,11 +26,7 @@ SHELL ["/bin/bash", "--login", "-c"]
 
 ENV NVM_DIR=$HOME/.nvm
 # add nvm
-RUN git clone https://github.com/nvm-sh/nvm.git "$NVM_DIR" \
-      && cd "$NVM_DIR" \
-      && git fetch \
-      && git checkout `git describe --abbrev=0 --tags --match "v[0-9]*" $(git rev-list --tags --max-count=1)` \
-      && \. "$NVM_DIR/nvm.sh"
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
 
 # nvm
 RUN echo 'export NVM_DIR="$HOME/.nvm"' >> "$HOME/.bashrc"
@@ -47,13 +38,4 @@ ENV TERM=xterm
 # avoid million NPM install messages
 ENV npm_config_loglevel=warn
 
-USER root:root
-COPY docker-entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
-
-USER $USERNAME:$USERNAME
-
-SHELL ["/bin/bash", "--login", "-c"]
-RUN source ~/.bashrc
-
-ENTRYPOINT ["docker-entrypoint.sh"]
+ENTRYPOINT ["bash", "-c", "exec \"$@\"", "--"]
