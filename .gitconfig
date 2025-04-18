@@ -1,0 +1,3 @@
+[pull]
+	rebase = true
+	ff = only
