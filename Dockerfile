@@ -1,4 +1,4 @@
-FROM debian:bookworm-slim
+FROM debian:stable-slim
 LABEL org.opencontainers.image.authors="cmcgroarty@idesignconsulting.com"
 
 # bamboo plan deps
