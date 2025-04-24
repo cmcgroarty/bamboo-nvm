@@ -1,4 +1,4 @@
-FROM debian:stable-slim
+FROM debian:%VERSION%
 LABEL org.opencontainers.image.authors="cmcgroarty@idesignconsulting.com"
 
 # bamboo plan deps
@@ -25,8 +25,12 @@ SHELL ["/bin/bash", "--login", "-c"]
 
 
 ENV NVM_DIR=$HOME/.nvm
+
 # add nvm
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
+RUN git clone https://github.com/nvm-sh/nvm.git "$NVM_DIR" \
+      && cd "$NVM_DIR" \
+      && git checkout `git describe --abbrev=0 --tags --match "v[0-9]*" $(git rev-list --tags --max-count=1)` \
+      && \. "$NVM_DIR/nvm.sh"
 
 # nvm
 RUN echo 'export NVM_DIR="$HOME/.nvm"' >> "$HOME/.bashrc"
