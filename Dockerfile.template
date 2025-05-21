@@ -17,7 +17,7 @@ ENV HOME=/home/$USERNAME
 RUN adduser $USERNAME --uid $UID --home $HOME --shell /bin/bash
 
 # add blank .bashrc
-COPY .bashrc $HOME/.bashrc
+RUN touch $HOME/.bashrc
 RUN chown -R $USERNAME:$USERNAME $HOME/.bashrc
 
 USER $USERNAME:$USERNAME
